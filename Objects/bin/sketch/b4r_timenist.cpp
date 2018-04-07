@@ -9,7 +9,6 @@ B4R::ByteConverter* b4r_timenist::_bc;
 ULong b4r_timenist::_seconds;
 bool b4r_timenist::_firsttime;
 b4r_main* b4r_timenist::_main;
-b4r_httpjob* b4r_timenist::_httpjob;
 static B4R::Timer be_gann1_3;
 static B4R::WiFiSocket be_gann2_3;
 static B4R::AsyncStreams be_gann4_3;

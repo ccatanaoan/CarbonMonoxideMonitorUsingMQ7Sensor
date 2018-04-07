@@ -89,5 +89,4 @@ C:\Users\Cloyd\Desktop\CARBON~1\Objects\bin\sketch\B4RSerializator.cpp.o: \
  C:\Users\Cloyd\Desktop\CARBON~1\Objects\bin\sketch\PubSubClient.h \
  C:\Users\Cloyd\Desktop\CARBON~1\Objects\bin\sketch\rESP8266.h \
  C:\Users\Cloyd\Desktop\CARBON~1\Objects\bin\sketch\b4r_main.h \
- C:\Users\Cloyd\Desktop\CARBON~1\Objects\bin\sketch\b4r_httpjob.h \
  C:\Users\Cloyd\Desktop\CARBON~1\Objects\bin\sketch\b4r_timenist.h

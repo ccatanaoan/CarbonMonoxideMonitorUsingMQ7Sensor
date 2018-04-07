@@ -1,7 +1,6 @@
 ﻿Version=2.2
-NumberOfModules=2
-Module1=HttpJob
-Module2=TimeNIST
+NumberOfModules=1
+Module1=TimeNIST
 Build1=Default,B4RDev
 NumberOfFiles=0
 NumberOfLibraries=5
@@ -49,7 +48,12 @@ Sub Process_Globals
 	Private WiFiPassword As String = "SteelReserve"
 	Private readVoltage As UInt
 	Private ESP As ESP8266
-	Private bc as ByteConverter
+	Private bc As ByteConverter
+	Private NISTDate(8) As Byte
+	Private NISTHour As UInt
+	Private NISTMinute As UInt
+	Private NISTSecond As UInt
+	
 End Sub
 
 Private Sub AppStart
@@ -66,32 +70,7 @@ Private Sub AppStart
 	MQTTOpt.Initialize(MQTTUser, MQTTPassword)
 	MQTT_Connect(0)
 	
-	' Init the pin with MQ-7 connected
-	MQ7Pin.Initialize(MQ7PinNumber, MQ7Pin.MODE_INPUT)
 
-End Sub
-
-Private Sub PublishToThingSpeak(tag As Byte)
-	HttpJob.Initialize("MQ7")
-	Dim s As String
-	s = JoinStrings(Array As String("https://api.thingspeak.com/update?api_key=BAKWHUO7CM300BJU&field1=",readVoltage))
-	HttpJob.Post(s,"")
-End Sub
-
-Sub JobDone (Job As JobResult)
-	Log("*******************************")
-	Log("JobName: ", Job.JobName)
-	If Job.Success Then
-		Log("Response: ", Job.Response) 
-		If Job.JobName = "MQ7" Then
-
-		End If
-	Else
-		Log("ErrorMessage: ", Job.ErrorMessage)
-		Log("Status: ", Job.Status)
-		Log(Job.Response)
-	End If
-	CallSubPlus("Preparation1",1000,0)
 End Sub
 
 Sub Preparation1(tag As Byte)
@@ -122,10 +101,15 @@ Sub ReadSensor2(tag As Byte)
 	Log("MQ-7 PPM: ",rawvoltage)
 	readVoltage = rawvoltage
 	
+	bc.ArrayCopy(TimeNIST.GetDate, NISTDate)
+	NISTHour = TimeNIST.GetHours
+	NISTMinute = TimeNIST.GetMinutes
+	NISTSecond = TimeNIST.GetSeconds
+	
 	Dim s As String
-	s = JoinStrings(Array As String(rawvoltage,"|",bc.StringFromBytes(TimeNIST.GetDate),"|", _
-			NumberFormat(TimeNIST.GetHours, 2, 0),":",NumberFormat(TimeNIST.GetMinutes, 2, 0),":", _
-			NumberFormat(TimeNIST.GetSeconds, 2, 0)))
+	s = JoinStrings(Array As String(rawvoltage,"|",bc.StringFromBytes(NISTDate),"|", _
+			NumberFormat(NISTHour, 2, 0),":",NumberFormat(NISTMinute, 2, 0),":", _
+			NumberFormat(NISTSecond, 2, 0)))
 	Log("Sending ppm via MQTT: ",s)
 	If WiFi.IsConnected Then
 		MQTT.Publish("MQ7",s)
@@ -144,7 +128,7 @@ Sub ReadSensor2(tag As Byte)
 	End If
 	Log("*************************")
 	
-	CallSubPlus("PublishToThingSpeak",1000,0)
+	CallSubPlus("Preparation1",1000,0)
 End Sub
 
 Sub MQTT_Connect(Unused As Byte)
@@ -168,9 +152,9 @@ Sub mqtt_MessageArrived (Topic As String, Payload() As Byte)
 	If Topic = "MQ7" Then
 		If Payload = "Read voltage" Then
 			Dim s As String
-			s = JoinStrings(Array As String(readVoltage,"|",bc.StringFromBytes(TimeNIST.GetDate),"|", _
-			NumberFormat(TimeNIST.GetHours, 2, 0),":",NumberFormat(TimeNIST.GetMinutes, 2, 0),":", _
-			NumberFormat(TimeNIST.GetSeconds, 2, 0)))
+			s = JoinStrings(Array As String(readVoltage,"|",bc.StringFromBytes(NISTDate),"|", _
+			NumberFormat(NISTHour, 2, 0),":",NumberFormat(NISTMinute, 2, 0),":", _
+			NumberFormat(NISTSecond, 2, 0)))
 			MQTT.Publish("MQ7",s)
 		Else If Payload = "Restart controller" Then
 			MQTT.Publish("MQ7","Restarting controller by remote")
@@ -200,5 +184,7 @@ End Sub
 
 Public Sub TimeIsAvailable
 	' Loop for MQ-7 reading
+	' Init the pin with MQ-7 connected
+	MQ7Pin.Initialize(MQ7PinNumber, MQ7Pin.MODE_INPUT)
 	Preparation1(0)
 End Sub

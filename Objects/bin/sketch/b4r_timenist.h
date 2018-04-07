@@ -2,8 +2,6 @@
 #ifndef b4r_timenist_h
 #define b4r_timenist_h
 class b4r_main;
-class b4r_httpjob;
-class _jobresult;
 
 class b4r_timenist {
 public:
@@ -26,7 +24,6 @@ static B4R::ByteConverter* _bc;
 static ULong _seconds;
 static bool _firsttime;
 static b4r_main* _main;
-static b4r_httpjob* _httpjob;
 static void _start();
 static void _tmr_tick();
 };
