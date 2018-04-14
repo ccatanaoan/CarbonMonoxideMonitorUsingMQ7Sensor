@@ -35,6 +35,7 @@ static B4R::Array* _nistdate;
 static UInt _nisthour;
 static UInt _nistminute;
 static UInt _nistsecond;
+static B4R::B4RString* _hostname;
 static b4r_timenist* _timenist;
 static void _readsensor1(Byte _tag);
 static void _readsensor2(Byte _tag);

@@ -53,7 +53,7 @@ Sub Process_Globals
 	Private NISTHour As UInt
 	Private NISTMinute As UInt
 	Private NISTSecond As UInt
-	
+	Private hostname As String = "ESP8266_MQ7" 'ignore
 End Sub
 
 Private Sub AppStart
@@ -69,8 +69,6 @@ Private Sub AppStart
 	MQTT.Initialize2(WiFiStr.stream, MQTTHostName, MQTTPort, ClientId, "MQTT_MessageArrived", "MQTT_Disconnected")
 	MQTTOpt.Initialize(MQTTUser, MQTTPassword)
 	MQTT_Connect(0)
-	
-
 End Sub
 
 Sub Preparation1(tag As Byte)
@@ -188,3 +186,4 @@ Public Sub TimeIsAvailable
 	MQ7Pin.Initialize(MQ7PinNumber, MQ7Pin.MODE_INPUT)
 	Preparation1(0)
 End Sub
+
