@@ -5,9 +5,10 @@ Library2=rrandomaccessfile
 Library3=resp8266wifi
 Library4=rmqtt
 Library5=resp8266
+Library6=resp8266timetools
 Module1=TimeNIST
 NumberOfFiles=0
-NumberOfLibraries=5
+NumberOfLibraries=6
 NumberOfModules=1
 Version=2.6
 @EndOfDesignText@
@@ -49,12 +50,9 @@ Sub Process_Globals
 	Private WiFiPassword As String = "SteelReserve"
 	Private readVoltage As UInt
 	Private ESP As ESP8266
-	Private bc As ByteConverter
-	Private NISTDate(8) As Byte
-	Private NISTHour As UInt
-	Private NISTMinute As UInt
-	Private NISTSecond As UInt
 	Private hostname As String = "ESP8266_MQ7" 'ignore
+	Public timelib As ESPTimetools
+	Public timestamp As ULong
 End Sub
 
 Private Sub AppStart
@@ -100,19 +98,20 @@ Sub ReadSensor2(tag As Byte)
 	Log("MQ-7 PPM: ",rawvoltage)
 	readVoltage = rawvoltage
 	
-	bc.ArrayCopy(TimeNIST.GetDate, NISTDate)
-	NISTHour = TimeNIST.GetHours
-	NISTMinute = TimeNIST.GetMinutes
-	NISTSecond = TimeNIST.GetSeconds
-	
-	Dim s As String
-	s = JoinStrings(Array As String(rawvoltage,"|",bc.StringFromBytes(NISTDate),"|", _
-			NumberFormat(NISTHour, 2, 0),":",NumberFormat(NISTMinute, 2, 0),":", _
-			NumberFormat(NISTSecond, 2, 0)))
-	Log("Sending ppm via MQTT: ",s)
-	If WiFi.IsConnected Then
-		MQTT.Publish("MQ7",s)
+	' Get the time
+	timelib.initialize("pool.ntp.org",0)
+	timestamp = timelib.timestamp
+	If timestamp <> 0 Then
+		Dim s As String
+		s = JoinStrings(Array As String(rawvoltage,"|",NumberFormat(timelib.getyear(timestamp),2,0),"-",NumberFormat(timelib.getmonth(timestamp),2,0),"-",NumberFormat(timelib.getday(timestamp),2,0),"|", _
+			NumberFormat(timelib.gethour(timestamp), 2, 0),":",NumberFormat(timelib.getminute(timestamp), 2, 0),":", _
+			NumberFormat(timelib.getseconds(timestamp), 2, 0)))
+		Log("Sending ppm via MQTT: ",s)
+		If WiFi.IsConnected Then
+			MQTT.Publish("MQ7",s)
+		End If
 	End If
+	' Get the time
 	
 	If rawvoltage <= 100 Then
 		Log("Air-Quality: CO perfect")
@@ -150,11 +149,19 @@ Sub mqtt_MessageArrived (Topic As String, Payload() As Byte)
 	
 	If Topic = "MQ7" Then
 		If Payload = "Read voltage" Then
-			Dim s As String
-			s = JoinStrings(Array As String(readVoltage,"|",bc.StringFromBytes(NISTDate),"|", _
-			NumberFormat(NISTHour, 2, 0),":",NumberFormat(NISTMinute, 2, 0),":", _
-			NumberFormat(NISTSecond, 2, 0)))
-			MQTT.Publish("MQ7",s)
+			' Get the time
+			timelib.initialize("pool.ntp.org",0)
+			timestamp = timelib.timestamp
+			If timestamp <> 0 Then
+				Dim s As String
+				s = JoinStrings(Array As String(readVoltage,"|",NumberFormat(timelib.getyear(timestamp),2,0),"-",NumberFormat(timelib.getmonth(timestamp),2,0),"-",NumberFormat(timelib.getday(timestamp),2,0),"|", _
+			NumberFormat(timelib.gethour(timestamp), 2, 0),":",NumberFormat(timelib.getminute(timestamp), 2, 0),":", _
+			NumberFormat(timelib.getseconds(timestamp), 2, 0)))
+				If WiFi.IsConnected Then
+					MQTT.Publish("MQ7",s)
+				End If
+			End If
+			' Get the time
 		Else If Payload = "Restart controller" Then
 			MQTT.Publish("MQ7","Restarting controller by remote")
 			ESP.Restart
@@ -177,7 +184,8 @@ Sub ConnectToWifi
 	If WiFi.IsConnected Then
 		Log("Connected to ",WiFiSSID," network, Local IP ", WiFi.LocalIp)
 		' Get time from NIST server
-		TimeNIST.Start
+		'TimeNIST.Start
+		TimeIsAvailable
 	Else
 		ConnectToWifi
 		Log("Not Connected to WiFi")
