@@ -18,7 +18,6 @@ B4R::B4RESP8266* b4r_main::_esp;
 B4R::B4RString* b4r_main::_hostname;
 B4R::B4RESP8266TimeTools* b4r_main::_timelib;
 ULong b4r_main::_timestamp;
-b4r_timenist* b4r_main::_timenist;
 static B4R::Serial be_gann1_3;
 static B4R::Pin be_gann2_3;
 static B4R::B4RESPWiFi be_gann4_3;
@@ -72,15 +71,15 @@ _connecttowifi();
 if (b4r_main::_wifi->getIsConnected()) { 
  //BA.debugLineNum = 171;BA.debugLine="Log(\"Connected to \",WiFiSSID,\" network, Local IP";
 B4R::Common::LogHelper(4,102,F("Connected to "),101,b4r_main::_wifissid->data,102,F(" network, Local IP "),101,b4r_main::_wifi->getLocalIp()->data);
- //BA.debugLineNum = 174;BA.debugLine="TimeIsAvailable";
+ //BA.debugLineNum = 172;BA.debugLine="TimeIsAvailable";
 _timeisavailable();
  }else {
- //BA.debugLineNum = 176;BA.debugLine="ConnectToWifi";
+ //BA.debugLineNum = 174;BA.debugLine="ConnectToWifi";
 _connecttowifi();
- //BA.debugLineNum = 177;BA.debugLine="Log(\"Not Connected to WiFi\")";
+ //BA.debugLineNum = 175;BA.debugLine="Log(\"Not Connected to WiFi\")";
 B4R::Common::LogHelper(1,102,F("Not Connected to WiFi"));
  };
- //BA.debugLineNum = 179;BA.debugLine="End Sub";
+ //BA.debugLineNum = 177;BA.debugLine="End Sub";
 B4R::StackMemory::cp = cp;
 }
 void b4r_main::_mqtt_connect(Byte _unused){
@@ -205,7 +204,6 @@ B4R::StackMemory::cp = cp;
 void b4r_main::initializeProcessGlobals() {
      B4R::StackMemory::buffer = (byte*)malloc(STACK_BUFFER_SIZE);
      b4r_main::_process_globals();
-b4r_timenist::_process_globals();
 
    
 }
@@ -331,11 +329,11 @@ B4R::StackMemory::cp = cp;
 }
 void b4r_main::_timeisavailable(){
 const UInt cp = B4R::StackMemory::cp;
- //BA.debugLineNum = 181;BA.debugLine="Public Sub TimeIsAvailable";
- //BA.debugLineNum = 184;BA.debugLine="MQ7Pin.Initialize(MQ7PinNumber, MQ7Pin.MODE_INPUT";
+ //BA.debugLineNum = 179;BA.debugLine="Public Sub TimeIsAvailable";
+ //BA.debugLineNum = 182;BA.debugLine="MQ7Pin.Initialize(MQ7PinNumber, MQ7Pin.MODE_INPUT";
 b4r_main::_mq7pin->Initialize(b4r_main::_mq7pinnumber,Pin_MODE_INPUT);
- //BA.debugLineNum = 185;BA.debugLine="Preparation1(0)";
+ //BA.debugLineNum = 183;BA.debugLine="Preparation1(0)";
 _preparation1((Byte) (0));
- //BA.debugLineNum = 186;BA.debugLine="End Sub";
+ //BA.debugLineNum = 184;BA.debugLine="End Sub";
 B4R::StackMemory::cp = cp;
 }

@@ -1,16 +1,14 @@
 ﻿Build1=Default,B4RDev
 Group=Default Group
 Library1=rcore
-Library2=rrandomaccessfile
-Library3=resp8266wifi
-Library4=rmqtt
-Library5=resp8266
-Library6=resp8266timetools
-Module1=TimeNIST
+Library2=resp8266wifi
+Library3=rmqtt
+Library4=resp8266
+Library5=resp8266timetools
 NumberOfFiles=0
-NumberOfLibraries=6
-NumberOfModules=1
-Version=2.6
+NumberOfLibraries=5
+NumberOfModules=0
+Version=2.8
 @EndOfDesignText@
 ' Carbon Monoxide (CO) Monitor Using MQ-7 sensor
 '
@@ -183,8 +181,6 @@ Sub ConnectToWifi
 
 	If WiFi.IsConnected Then
 		Log("Connected to ",WiFiSSID," network, Local IP ", WiFi.LocalIp)
-		' Get time from NIST server
-		'TimeNIST.Start
 		TimeIsAvailable
 	Else
 		ConnectToWifi

@@ -1,7 +1,6 @@
 
 #ifndef b4r_main_h
 #define b4r_main_h
-class b4r_timenist;
 
 class b4r_main {
 public:
@@ -33,7 +32,6 @@ static B4R::B4RESP8266* _esp;
 static B4R::B4RString* _hostname;
 static B4R::B4RESP8266TimeTools* _timelib;
 static ULong _timestamp;
-static b4r_timenist* _timenist;
 static void _readsensor1(Byte _tag);
 static void _readsensor2(Byte _tag);
 static void _timeisavailable();
