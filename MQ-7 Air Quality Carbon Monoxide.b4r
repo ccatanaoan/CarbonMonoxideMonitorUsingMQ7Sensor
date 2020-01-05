@@ -8,7 +8,7 @@ Library5=resp8266timetools
 NumberOfFiles=0
 NumberOfLibraries=5
 NumberOfModules=0
-Version=2.8
+Version=3
 @EndOfDesignText@
 ' Carbon Monoxide (CO) Monitor Using MQ-7 sensor
 '
@@ -44,8 +44,8 @@ Sub Process_Globals
 	Private MQTTPassword As String = "KHSV1Q1qSUUY"
 	Private MQTTHostName As String = "m14.cloudmqtt.com"
 	Private MQTTPort As Int = 11816
-	Private WiFiSSID As String = "RiseAboveThisHome"
-	Private WiFiPassword As String = "SteelReserve"
+	Private WiFiSSID As String = "IoT2G"
+	Private WiFiPassword As String = "SteelReserveIOT1980"
 	Private readVoltage As UInt
 	Private ESP As ESP8266
 	Private hostname As String = "ESP8266_MQ7" 'ignore

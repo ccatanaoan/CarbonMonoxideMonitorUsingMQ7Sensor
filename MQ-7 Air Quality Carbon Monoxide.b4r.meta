@@ -1,6 +1,6 @@
 ﻿ModuleBookmarks0=
 ModuleBreakpoints0=
 ModuleClosedNodes0=
-NavigationStack=Main,Process_Globals,40,0,Main,ConnectToWifi,171,0,Main,mqtt_MessageArrived,156,0
+NavigationStack=Main,ConnectToWifi,171,0,Main,mqtt_MessageArrived,156,0,Main,Process_Globals,39,0
 SelectedBuild=0
 VisibleModules=
