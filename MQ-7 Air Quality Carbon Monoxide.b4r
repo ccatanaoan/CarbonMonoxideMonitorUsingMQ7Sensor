@@ -26,6 +26,15 @@ Version=3
 '         VCC        ->        VIN (5.5V)
 '         GRD        ->        GRD
 
+'*****************************************************************************************************
+'How To Select the board in B4R
+'*****************************************************************************************************
+'1. After connecting the ESP32, determine the COM Port.
+'2. Tools > Board Selector
+'3. Board: ESP32 Dev Module. If encountering error, use NodeMCU 1.0 (ESP-12E Module)
+'4. Serial Port: COM12 Silicon Labs CP210x USB To UART Bridge - Note: COM port depends on system setup
+'*****************************************************************************************************
+
 #Region Project Attributes
 	#AutoFlushLogs: True
 	#CheckArrayBounds: True
@@ -39,12 +48,9 @@ Sub Process_Globals
 	Private WiFi As ESP8266WiFi
 	Private WiFiStr As WiFiSocket
 	Private MQTT As MqttClient
-	Private MQTTOpt As MqttConnectOptions
-	Private MQTTUser As String = "vynckfaq"
-	Private MQTTPassword As String = "KHSV1Q1qSUUY"
-	Private MQTTHostName As String = "m14.cloudmqtt.com"
-	Private MQTTPort As Int = 11816
-	Private WiFiSSID As String = "RiseAboveThisHome"
+	Private MQTTHostName As String = "broker.hivemq.com"
+	Private MQTTPort As Int = 1883
+	Private WiFiSSID As String = "InternetOfThings"
 	Private WiFiPassword As String = "SteelReserve"
 	Private readVoltage As UInt
 	Private ESP As ESP8266
@@ -64,7 +70,6 @@ Private Sub AppStart
 	' Connect to cloud MQTT broker
 	Dim ClientId As String = Rnd(0, 999999999) 'create a unique id
 	MQTT.Initialize2(WiFiStr.stream, MQTTHostName, MQTTPort, ClientId, "MQTT_MessageArrived", "MQTT_Disconnected")
-	MQTTOpt.Initialize(MQTTUser, MQTTPassword)
 	MQTT_Connect(0)
 End Sub
 
@@ -105,9 +110,7 @@ Sub ReadSensor2(tag As Byte)
 			NumberFormat(timelib.gethour(timestamp), 2, 0),":",NumberFormat(timelib.getminute(timestamp), 2, 0),":", _
 			NumberFormat(timelib.getseconds(timestamp), 2, 0)))
 		Log("Sending ppm via MQTT: ",s)
-		If WiFi.IsConnected Then
-			MQTT.Publish("MQ7",s)
-		End If
+		MQTT.Publish("MQ7LivingRoomCloyd",s)
 	End If
 	' Get the time
 	
@@ -134,18 +137,19 @@ Sub MQTT_Connect(Unused As Byte)
 	
 	If MQTT.Connect = False Then
 		Log("Connecting to broker")
-		MQTT.Connect2(MQTTOpt)
+		MQTT.Connect
 		CallSubPlus("MQTT_Connect", 1000, 0)
 	Else
 		Log("Connected to broker")
-		MQTT.Subscribe("MQ7", 0)
+		MQTT.Subscribe("MQ7LivingRoomCloyd", 0)
+		ReadSensor
 	End If
 End Sub
 
 Sub mqtt_MessageArrived (Topic As String, Payload() As Byte)
 	Log("Message arrived. Topic=", Topic, " Payload=", Payload)
 	
-	If Topic = "MQ7" Then
+	If Topic = "MQ7LivingRoomCloyd" Then
 		If Payload = "Read voltage" Then
 			' Get the time
 			timelib.initialize("pool.ntp.org",0)
@@ -155,13 +159,13 @@ Sub mqtt_MessageArrived (Topic As String, Payload() As Byte)
 				s = JoinStrings(Array As String(readVoltage,"|",NumberFormat(timelib.getyear(timestamp),2,0),"-",NumberFormat(timelib.getmonth(timestamp),2,0),"-",NumberFormat(timelib.getday(timestamp),2,0),"|", _
 			NumberFormat(timelib.gethour(timestamp), 2, 0),":",NumberFormat(timelib.getminute(timestamp), 2, 0),":", _
 			NumberFormat(timelib.getseconds(timestamp), 2, 0)))
-				If WiFi.IsConnected Then
-					MQTT.Publish("MQ7",s)
-				End If
+
+			MQTT.Publish("MQ7LivingRoomCloyd",s)
+
 			End If
 			' Get the time
 		Else If Payload = "Restart controller" Then
-			MQTT.Publish("MQ7","Restarting controller by remote")
+			MQTT.Publish("MQ7LivingRoomCloyd","Restarting controller by remote")
 			ESP.Restart
 		End If
 	End If
@@ -174,21 +178,17 @@ Sub mqtt_Disconnected
 End Sub
 
 Sub ConnectToWifi
-	Log("Connecting to WiFi")
-	If WiFi.Connect2(WiFiSSID, WiFiPassword) = False Then
-		ConnectToWifi
-	End If
-
 	If WiFi.IsConnected Then
 		Log("Connected to ",WiFiSSID," network, Local IP ", WiFi.LocalIp)
-		TimeIsAvailable
 	Else
-		ConnectToWifi
-		Log("Not Connected to WiFi")
+		Log("Connecting to WiFi")
+		If WiFi.Connect2(WiFiSSID, WiFiPassword) = False Then
+			ConnectToWifi
+		End If
 	End If
 End Sub
 
-Public Sub TimeIsAvailable
+Public Sub ReadSensor
 	' Loop for MQ-7 reading
 	' Init the pin with MQ-7 connected
 	MQ7Pin.Initialize(MQ7PinNumber, MQ7Pin.MODE_INPUT)
