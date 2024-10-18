@@ -8,7 +8,7 @@ Library5=resp8266timetools
 NumberOfFiles=0
 NumberOfLibraries=5
 NumberOfModules=0
-Version=3
+Version=3.9
 @EndOfDesignText@
 ' Carbon Monoxide (CO) Monitor Using MQ-7 sensor
 '
@@ -48,7 +48,7 @@ Sub Process_Globals
 	Private WiFi As ESP8266WiFi
 	Private WiFiStr As WiFiSocket
 	Private MQTT As MqttClient
-	Private MQTTHostName As String = "broker.hivemq.com"
+	Private MQTTHostName As String = "broker.emqx.io"
 	Private MQTTPort As Int = 1883
 	Private WiFiSSID As String = "InternetOfThings"
 	Private WiFiPassword As String = "SteelReserve"
