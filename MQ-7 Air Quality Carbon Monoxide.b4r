@@ -48,7 +48,7 @@ Sub Process_Globals
 	Private WiFi As ESP8266WiFi
 	Private WiFiStr As WiFiSocket
 	Private MQTT As MqttClient
-	Private MQTTHostName As String = "broker.emqx.io"
+	Private MQTTHostName As String = "mqtt.eclipseprojects.io"
 	Private MQTTPort As Int = 1883
 	Private WiFiSSID As String = "InternetOfThings"
 	Private WiFiPassword As String = "SteelReserve"
