@@ -57,12 +57,19 @@ Sub Process_Globals
 	Private hostname As String = "ESP8266_MQ7" 'ignore
 	Public timelib As ESPTimetools
 	Public timestamp As ULong
+	Private pin16 As Pin
 End Sub
 
 Private Sub AppStart
 	Serial1.Initialize(115200)
 	Delay(3000)
 	Log("AppStart")
+	
+	Dim bb() As Byte = "LivingRoomMQ7"
+	RunNative("SetHostName", bb)
+	RunNative("stopAP", Null)
+	
+	pin16.Initialize(16, pin16.MODE_OUTPUT)
 	
 	' Connect to WiFi
 	ConnectToWifi
@@ -136,10 +143,12 @@ Sub MQTT_Connect(Unused As Byte)
 	End If
 	
 	If MQTT.Connect = False Then
+		pin16.DigitalWrite(True)
 		Log("Connecting to broker")
 		MQTT.Connect
 		CallSubPlus("MQTT_Connect", 1000, 0)
 	Else
+		pin16.DigitalWrite(False)
 		Log("Connected to broker")
 		MQTT.Subscribe("MQ7LivingRoomCloyd", 0)
 		ReadSensor
@@ -172,6 +181,7 @@ Sub mqtt_MessageArrived (Topic As String, Payload() As Byte)
 End Sub
 
 Sub mqtt_Disconnected
+	pin16.DigitalWrite(True)
 	Log("Disconnected from broker")
 	MQTT.Close
 	MQTT_Connect(0)
@@ -181,6 +191,7 @@ Sub ConnectToWifi
 	If WiFi.IsConnected Then
 		Log("Connected to ",WiFiSSID," network, Local IP ", WiFi.LocalIp)
 	Else
+		pin16.DigitalWrite(True)
 		Log("Connecting to WiFi")
 		If WiFi.Connect2(WiFiSSID, WiFiPassword) = False Then
 			ConnectToWifi
@@ -194,4 +205,16 @@ Public Sub ReadSensor
 	MQ7Pin.Initialize(MQ7PinNumber, MQ7Pin.MODE_INPUT)
 	Preparation1(0)
 End Sub
+
+#If C
+void SetHostName(B4R::Object* o) {
+	B4R::Array* b = (B4R::Array*)B4R::Object::toPointer(o);
+	char* c = (char*)b->data;
+	WiFi.hostname(c);
+}
+
+void stopAP (B4R::Object* u) {
+	WiFi.softAPdisconnect(true);
+}
+#End If
 

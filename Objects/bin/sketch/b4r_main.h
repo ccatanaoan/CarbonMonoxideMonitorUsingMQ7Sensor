@@ -29,6 +29,7 @@ static B4R::B4RESP8266* _esp;
 static B4R::B4RString* _hostname;
 static B4R::B4RESP8266TimeTools* _timelib;
 static ULong _timestamp;
+static B4R::Pin* _pin16;
 static void _readsensor();
 static void _readsensor1(Byte _tag);
 static void _readsensor2(Byte _tag);
