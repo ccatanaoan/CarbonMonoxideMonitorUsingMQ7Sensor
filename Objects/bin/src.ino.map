@@ -22731,14 +22731,15 @@ END GROUP
                 0x3ffe860c       0x32 C:\Users\Cloyd\Desktop\HOMEAU~1\LIVING~2\Objects\bin\sketch\B4RCore.cpp.o
                                  0x33 (size before relaxing)
  .rodata.str1.1
-                0x3ffe863e       0xaf C:\Users\Cloyd\Desktop\HOMEAU~1\LIVING~2\Objects\bin\sketch\b4r_main.cpp.o
-                                 0xb1 (size before relaxing)
+                0x3ffe863e       0xae C:\Users\Cloyd\Desktop\HOMEAU~1\LIVING~2\Objects\bin\sketch\b4r_main.cpp.o
+                                 0xb0 (size before relaxing)
  .rodata.CSWTCH$105
-                0x3ffe86ed        0x6 C:\Users\Cloyd\Desktop\HOMEAU~1\LIVING~2\Objects\bin\libraries\ESP8266WiFi\ESP8266WiFi.a(ESP8266WiFiSTA.cpp.o)
+                0x3ffe86ec        0x6 C:\Users\Cloyd\Desktop\HOMEAU~1\LIVING~2\Objects\bin\libraries\ESP8266WiFi\ESP8266WiFi.a(ESP8266WiFiSTA.cpp.o)
  .rodata._ZL9monthDays
-                0x3ffe86f3        0xc C:\Users\Cloyd\Desktop\HOMEAU~1\LIVING~2\Objects\bin\libraries\TimeLib\Time.cpp.o
+                0x3ffe86f2        0xc C:\Users\Cloyd\Desktop\HOMEAU~1\LIVING~2\Objects\bin\libraries\TimeLib\Time.cpp.o
  .rodata.str1.1
-                0x3ffe86ff       0x11 C:\Users\Cloyd\Desktop\HOMEAU~1\LIVING~2\Objects\bin\core\core.a(Print.cpp.o)
+                0x3ffe86fe       0x11 C:\Users\Cloyd\Desktop\HOMEAU~1\LIVING~2\Objects\bin\core\core.a(Print.cpp.o)
+ *fill*         0x3ffe870f        0x1 
  .rodata.str1.4
                 0x3ffe8710        0xc C:\Users\Cloyd\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.6.3/tools/sdk/lib/NONOSDK22x_190703\libpp.a(pm_for_bcn_only_mode.o)
  .rodata.str1.4
