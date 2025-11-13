@@ -49,7 +49,8 @@ Sub Process_Globals
 	Private WiFiStr As WiFiSocket
 	Private MQTT As MqttClient
 	'Private MQTTHostName As String = "broker.hivemq.com"
-	Private MQTTHostName As String = "test.mosquitto.org"
+	'Private MQTTHostName As String = "test.mosquitto.org"
+	Private MQTTHostName As String = "broker.emqx.io"
 	Private MQTTPort As Int = 1883
 	Private WiFiSSID As String = "InternetOfThings"
 	Private WiFiPassword As String = "SteelReserve"
